@@ -24,7 +24,18 @@ app.use("/api/friend", friendRouter);
 //eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNjU0NzIxMjcwMTZmMGE0OWYwM2YzNiIsImlhdCI6MTY2NzU4MTgxOCwiZXhwIjoxNjcwMTczODE4fQ.mlMzFsTLQvFu7Bq6gWQ7mJbLBozSEIXZBY8ZMjTWOGw
 app.use(notFound);
 app.use(errorHandler);
-const server = app.listen(PORT, () => {
+// const server = app.listen(PORT, () => {
+//   console.log(`http://localhost:${PORT}`);
+// });
+if(process.env.NODE_ENV === "hoangchi"){
+  app.use(express.static(path.join(__dirname, 'client/build')));
+  app.get('*', (req, res) =>{
+    res.sendFile(path.join(__dirname, 'client/build', "index.html")); 
+
+  })
+}
+
+const server = app.listen(PORT || 5000, () => {
   console.log(`http://localhost:${PORT}`);
 });
 /// Socket /////
@@ -35,6 +46,7 @@ const io = require("socket.io")(server, {
     origin: "*",
   },
 });
+
 io.on("connection", (socket) => {
   console.log(socket.id, " connected !!!");
   socket.on("setup", (userData) => {
